@@ -5,6 +5,12 @@
 		"factoryName": {
 			"value": "raxitadf"
 		},
+		"ls_address_copy_connectionString": {
+			"value": ""
+		},
+		"ls_copy_sql_source_password": {
+			"value": ""
+		},
 		"ls_destination_connectionString": {
 			"value": ""
 		},
@@ -13,6 +19,15 @@
 		},
 		"ls_sql_source_tables_password": {
 			"value": ""
+		},
+		"ls_copy_sql_source_properties_typeProperties_server": {
+			"value": "rxtsqlsrvr.database.windows.net"
+		},
+		"ls_copy_sql_source_properties_typeProperties_database": {
+			"value": "db01"
+		},
+		"ls_copy_sql_source_properties_typeProperties_userName": {
+			"value": "azureuser"
 		},
 		"ls_select_data_generate_properties_typeProperties_server": {
 			"value": "rxtsqlsrvr.database.windows.net"

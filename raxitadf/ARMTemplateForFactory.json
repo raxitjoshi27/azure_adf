@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "raxitadf"
 		},
+		"ls_address_copy_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_address_copy'"
+		},
+		"ls_copy_sql_source_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_copy_sql_source'"
+		},
 		"ls_destination_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_destination'"
@@ -18,6 +26,18 @@
 		"ls_sql_source_tables_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'ls_sql_source_tables'"
+		},
+		"ls_copy_sql_source_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "rxtsqlsrvr.database.windows.net"
+		},
+		"ls_copy_sql_source_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db01"
+		},
+		"ls_copy_sql_source_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "azureuser"
 		},
 		"ls_select_data_generate_properties_typeProperties_server": {
 			"type": "string",
@@ -48,6 +68,80 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_copy_azure_db_to_file')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from SalesLT.Address",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_copy_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_address_copy",
+								"type": "DatasetReference",
+								"parameters": {
+									"P_FILE_NAME": "Address.csv"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_copy_source')]",
+				"[concat(variables('factoryId'), '/datasets/ds_address_copy')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_sqldb_to_filewrite')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -183,6 +277,93 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_address_copy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_address_copy",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"P_FILE_NAME": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "destination"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "AddressID",
+						"type": "String"
+					},
+					{
+						"name": "AddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "AddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "StateProvince",
+						"type": "String"
+					},
+					{
+						"name": "CountryRegion",
+						"type": "String"
+					},
+					{
+						"name": "PostalCode",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_address_copy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_copy_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_copy_sql_source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_copy_sql_source')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_destination')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -260,6 +441,41 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_sql_source_tables')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_address_copy')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_address_copy_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_copy_sql_source')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_copy_sql_source_properties_typeProperties_server')]",
+					"database": "[parameters('ls_copy_sql_source_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_copy_sql_source_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_copy_sql_source_password')]"
+					}
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ls_destination')]",
