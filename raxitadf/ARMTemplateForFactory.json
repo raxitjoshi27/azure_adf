@@ -126,7 +126,10 @@
 								"referenceName": "ds_address_copy",
 								"type": "DatasetReference",
 								"parameters": {
-									"P_FILE_NAME": "Address.csv"
+									"P_FILE_NAME": {
+										"value": "@concat('Address','.','csv')",
+										"type": "Expression"
+									}
 								}
 							}
 						]
