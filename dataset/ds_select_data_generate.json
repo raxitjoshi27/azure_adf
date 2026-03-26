@@ -1,0 +1,13 @@
+{
+	"name": "ds_select_data_generate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_select_data_generate",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

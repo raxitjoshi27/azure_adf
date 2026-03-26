@@ -1,0 +1,9 @@
+{
+	"name": "raxitadf",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "68726705-f967-4a35-a358-ec7ac439fc98",
+		"tenantId": "ee1e724f-57aa-490c-8446-eb5659e37225"
+	}
+}
