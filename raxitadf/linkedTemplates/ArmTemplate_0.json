@@ -179,6 +179,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().P_FILE_NAME",
+							"type": "Expression"
+						},
 						"container": "destination"
 					},
 					"columnDelimiter": ",",
