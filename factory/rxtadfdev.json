@@ -1,0 +1,9 @@
+{
+	"name": "rxtadfdev",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e5bd9878-a831-43e0-b91c-5cd2bf27e313",
+		"tenantId": "ee1e724f-57aa-490c-8446-eb5659e37225"
+	}
+}

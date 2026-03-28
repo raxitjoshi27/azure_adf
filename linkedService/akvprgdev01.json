@@ -1,0 +1,11 @@
+{
+	"name": "akvprgdev01",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://keyvltprg01dev.vault.azure.net/"
+		}
+	}
+}
